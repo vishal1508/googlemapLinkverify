@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, send_file
 import os
 import re
 from urllib.parse import urlparse
-import openpyxl
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
 app = Flask(__name__)
 
@@ -81,33 +82,37 @@ def process_file():
         output_path = os.path.join(app.config['PROCESSED_FOLDER'], output_filename)
 
         # Read the Excel file using openpyxl to extract hyperlinks
-        wb = openpyxl.load_workbook(file_path)
+        wb = load_workbook(file_path)
         sheet = wb.active
 
         # Assuming 'Reference Link' is the header, find the column index for 'Reference Link'
         columns = [cell.value for cell in sheet[1]]
         if 'Reference Link' not in columns:
             return "The Excel file must contain a column named 'Reference Link'", 400
-        
+
         reference_link_col_index = columns.index('Reference Link') + 1  # Excel columns are 1-indexed
 
-        # Add a new column for 'Valid Map Address' at the next position
-        sheet.cell(row=1, column=reference_link_col_index + 1, value='Valid Map Address')
+        # Add a new column header for 'Valid Map Address' if not already present
+        if 'Valid Map Address' not in columns:
+            new_col_index = len(columns) + 1
+            sheet.cell(row=1, column=new_col_index, value='Valid Map Address')
+        else:
+            new_col_index = columns.index('Valid Map Address') + 1
 
         # Create a list of URLs and check their validity
-        for i, row in enumerate(sheet.iter_rows(min_row=2, max_row=sheet.max_row), start=2):
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, max_row=sheet.max_row), start=2):
+            # Get the URL from the 'Reference Link' column
             link_cell = row[reference_link_col_index - 1]  # Adjust for 0-indexed list
-            
-            # Skip rows with empty or invalid URLs
             raw_url = extract_url_from_hyperlink(link_cell)  # Extract raw URL
-            if not raw_url:
-                continue  # Skip empty URLs
-            
+
             # Check if the URL is a valid Google Maps address
-            valid_map_address = is_google_maps_address(raw_url)
-            
-            # Write the result (True/False) to the 'Valid Map Address' column
-            sheet.cell(row=i, column=reference_link_col_index + 1, value=valid_map_address)
+            if raw_url:
+                valid = is_google_maps_address(raw_url)
+            else:
+                valid = None  # Keep empty if no data in 'Reference Link'
+
+            # Write the result in the 'Valid Map Address' column
+            sheet.cell(row=row_idx, column=new_col_index, value=valid)
 
         # Save the processed file
         wb.save(output_path)
