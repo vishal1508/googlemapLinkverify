@@ -1,18 +1,18 @@
 # Excel Google Maps Validator
 
-This is a Flask-based web application for processing Excel files. The application reads an uploaded Excel file, validates URLs in a `Reference Link` column to check if they are valid Google Maps addresses, and appends a new column, `Valid Map Address`, with `True`, `False`, or blank values based on the validation.
+This Flask-based web application processes Excel files by validating URLs in the `Reference Link` column. It adds a new column, `Valid Map Address`, indicating whether the URL is a valid Google Maps address.
 
 ---
 
 ## Features
 
-- Upload an Excel file.
-- Validate URLs in the `Reference Link` column.
-- Append a new column named `Valid Map Address` with validation results:
-  - **True**: The link is a valid Google Maps address with coordinates.
-  - **False**: The link is not a valid Google Maps address.
-  - **Blank**: The `Reference Link` column is empty for the row.
-- Download the processed Excel file.
+- Upload an Excel file for processing.
+- Validate URLs in the `Reference Link` column:
+  - **True**: A valid Google Maps address with coordinates.
+  - **False**: Not a valid Google Maps address.
+  - **Blank**: Empty or missing values in the `Reference Link` column.
+- Preserve all other columns in the original Excel file.
+- Download the processed file.
 
 ---
 
@@ -20,9 +20,7 @@ This is a Flask-based web application for processing Excel files. The applicatio
 
 - Python 3.8 or higher
 - Flask
-- pandas
 - openpyxl
-- xlrd
 
 ---
 
@@ -42,7 +40,7 @@ This is a Flask-based web application for processing Excel files. The applicatio
 
 3. **Install dependencies**:
     ```bash
-    pip install -r requirements.txt
+    pip install flask openpyxl
     ```
 
 4. **Create necessary directories**:
@@ -59,67 +57,77 @@ This is a Flask-based web application for processing Excel files. The applicatio
     python app.py
     ```
 
-2. **Open your browser** and go to:
+2. **Access the application in your browser**:
     ```
     http://127.0.0.1:5000/
     ```
 
 3. **Upload an Excel file**:
-    - The file must have a column named `Reference Link`.
+    - Ensure the file contains a column named `Reference Link`.
 
 4. **Download the processed file**:
-    - The processed file will contain a new column named `Valid Map Address`.
+    - After processing, the file will include a new column, `Valid Map Address`.
 
 ---
 
-## Directory Structure
+## Project Structure
+
 
 ---
 
 ## Example Input and Output
 
-### Input Excel
+### Input Excel File
 
 | Reference Link                              | Column A | Column B |
 |---------------------------------------------|----------|----------|
 | https://maps.google.com/maps?q=37.7749,-122.4194 | Data1    | Data2    |
 | https://maps.google.com/maps@40.7128,-74.0060 | Data3    | Data4    |
 |                                             | Data5    | Data6    |
-| https://maps.google.com/maps?q=34.0522,-118.2437 | Data7    | Data8    |
+| https://example.com/random-url              | Data7    | Data8    |
 
-### Output Excel
+### Output Excel File
 
 | Reference Link                              | Column A | Column B | Valid Map Address |
 |---------------------------------------------|----------|----------|-------------------|
 | https://maps.google.com/maps?q=37.7749,-122.4194 | Data1    | Data2    | True              |
 | https://maps.google.com/maps@40.7128,-74.0060 | Data3    | Data4    | True              |
 |                                             | Data5    | Data6    |                   |
-| https://maps.google.com/maps?q=34.0522,-118.2437 | Data7    | Data8    | True              |
+| https://example.com/random-url              | Data7    | Data8    | False             |
 
 ---
 
 ## How It Works
 
 1. **Upload File**:
-    - Users upload an Excel file through the web interface.
+    - Users upload an Excel file via the web interface.
 
 2. **Process File**:
-    - The application reads the `Reference Link` column.
-    - It validates each URL to check if it is a Google Maps link with coordinates.
-    - A new column, `Valid Map Address`, is appended with the validation results.
+    - The app reads the `Reference Link` column.
+    - It validates URLs using the following logic:
+      - Checks if the domain contains `google.com`.
+      - Confirms the URL path includes `maps`.
+      - Validates the presence of latitude and longitude in the URL.
 
 3. **Download File**:
-    - The processed file is made available for download.
+    - The processed file, with the `Valid Map Address` column, is provided for download.
 
 ---
 
 ## Validation Logic
 
-The URL validation logic includes:
-1. Checking if the domain contains `google.com`.
-2. Verifying that the URL path contains `maps`.
-3. Extracting coordinates from the URL after `@` or `q=`.
-4. Ensuring the coordinates are valid latitude and longitude values.
+1. **Domain Check**:
+    - Verifies that the domain includes `google.com`.
+
+2. **Path Check**:
+    - Confirms the URL path contains `maps`.
+
+3. **Coordinate Extraction**:
+    - Extracts latitude and longitude from the URL.
+
+4. **Result**:
+    - `True` if valid coordinates are found.
+    - `False` otherwise.
 
 ---
 
@@ -129,13 +137,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-## Contribution
-
-Feel free to open issues or submit pull requests to improve the application.
-
----
-
 ## Contact
 
 For questions or feedback, contact **yourname@example.com**.
-
