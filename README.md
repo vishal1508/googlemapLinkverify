@@ -74,3 +74,68 @@ This is a Flask-based web application for processing Excel files. The applicatio
 
 ## Directory Structure
 
+---
+
+## Example Input and Output
+
+### Input Excel
+
+| Reference Link                              | Column A | Column B |
+|---------------------------------------------|----------|----------|
+| https://maps.google.com/maps?q=37.7749,-122.4194 | Data1    | Data2    |
+| https://maps.google.com/maps@40.7128,-74.0060 | Data3    | Data4    |
+|                                             | Data5    | Data6    |
+| https://maps.google.com/maps?q=34.0522,-118.2437 | Data7    | Data8    |
+
+### Output Excel
+
+| Reference Link                              | Column A | Column B | Valid Map Address |
+|---------------------------------------------|----------|----------|-------------------|
+| https://maps.google.com/maps?q=37.7749,-122.4194 | Data1    | Data2    | True              |
+| https://maps.google.com/maps@40.7128,-74.0060 | Data3    | Data4    | True              |
+|                                             | Data5    | Data6    |                   |
+| https://maps.google.com/maps?q=34.0522,-118.2437 | Data7    | Data8    | True              |
+
+---
+
+## How It Works
+
+1. **Upload File**:
+    - Users upload an Excel file through the web interface.
+
+2. **Process File**:
+    - The application reads the `Reference Link` column.
+    - It validates each URL to check if it is a Google Maps link with coordinates.
+    - A new column, `Valid Map Address`, is appended with the validation results.
+
+3. **Download File**:
+    - The processed file is made available for download.
+
+---
+
+## Validation Logic
+
+The URL validation logic includes:
+1. Checking if the domain contains `google.com`.
+2. Verifying that the URL path contains `maps`.
+3. Extracting coordinates from the URL after `@` or `q=`.
+4. Ensuring the coordinates are valid latitude and longitude values.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Contribution
+
+Feel free to open issues or submit pull requests to improve the application.
+
+---
+
+## Contact
+
+For questions or feedback, contact **yourname@example.com**.
+
