@@ -28,7 +28,7 @@ This Flask-based web application processes Excel files by validating URLs in the
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/excel-google-maps-validator.git
+    git clone [https://github.com/yourusername/excel-google-maps-validator.git](https://github.com/vishal1508/googlemapLinkverify.git)
     cd excel-google-maps-validator
     ```
 
